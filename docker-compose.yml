@@ -1,0 +1,28 @@
+version: '2'
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+            - "80:80"
+        restart: always
+        volumes:
+            - "./etc/nginx/default.conf:/etc/nginx/conf.d/default.conf"
+            - "./htdocs/public:/var/www/html"
+
+    php-fpm-7.3:
+        image: devilbox/php-fpm:7.3-work
+        restart: always
+        ports:
+            - "9000:9000"
+        environment:
+            - TIMEZONE=Europe/Berlin
+            - APP_DEBUG=1
+        volumes:
+            - "./htdocs/:/var/www/html"
+            - "./etc/php/xdebug.ini:/usr/local/etc/php/conf.d/zzz-xdebug.ini"
+
+    composer:
+        image: composer
+        volumes:
+            - "./htdocs:/app"
+        command: 'install --ignore-platform-reqs'
